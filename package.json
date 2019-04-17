@@ -1,0 +1,19 @@
+{
+  "name": "ladok-api",
+  "version": "1.0.0",
+  "description": "Wrapper for \"got\" to interact with the Ladok API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KTH/ladok-api.git"
+  },
+  "author": "KTH Royal Institute of Technology",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KTH/ladok-api/issues"
+  },
+  "homepage": "https://github.com/KTH/ladok-api#readme"
+}
