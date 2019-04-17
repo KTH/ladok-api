@@ -1,5 +1,5 @@
 {
-  "name": "ladok-api",
+  "name": "@kth/ladok-api",
   "version": "1.0.0",
   "description": "Wrapper for \"got\" to interact with the Ladok API",
   "main": "index.js",

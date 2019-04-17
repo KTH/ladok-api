@@ -9,7 +9,7 @@ test('The "test" method should reach the right endpoint', async t => {
     .get('/kataloginformation/anvandare/autentiserad')
     .reply(200, {})
 
-  const ladok = LadokApi('http://ladok.example')
+  const ladok = LadokApi('http://ladok.example', { pfx: 'some pfx file' })
   try {
     await ladok.test()
     t.truthy(scope.isDone())
