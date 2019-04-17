@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/KTH/ladok-api/issues"
   },
-  "homepage": "https://github.com/KTH/ladok-api#readme"
+  "homepage": "https://github.com/KTH/ladok-api#readme",
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
 }
