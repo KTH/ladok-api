@@ -24,7 +24,17 @@ module.exports = function LadokApi (baseUrl, ssl) {
     return got('/kataloginformation/anvandare/autentiserad', options)
   }
 
+  async function requestUrl (endpoint, method = 'GET', parameters) {
+    return got(endpoint, {
+      ...options,
+      json: true,
+      body: parameters,
+      method
+    })
+  }
+
   return {
-    test
+    test,
+    requestUrl
   }
 }
