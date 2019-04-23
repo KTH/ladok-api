@@ -33,8 +33,41 @@ module.exports = function LadokApi (baseUrl, ssl) {
     })
   }
 
+  async function * sokPaginated (endpoint, criteria) {
+    const size = await got(endpoint, {
+      ...options,
+      json: true,
+      method: 'PUT',
+      body: {
+        ...criteria,
+        Page: 1,
+        Limit: 1
+      }
+    }).then(r => r.body.TotaltAntalPoster)
+
+    let page = 0
+    while (size > page * 100) {
+      page++
+
+      const response = await got(endpoint, {
+        ...options,
+        json: true,
+        method: 'PUT',
+        body: {
+          ...criteria,
+          Page: page,
+          Limit: 100
+        }
+      })
+
+      yield response
+
+    }
+  }
+
   return {
     test,
-    requestUrl
+    requestUrl,
+    sokPaginated
   }
 }
