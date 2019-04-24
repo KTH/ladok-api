@@ -61,7 +61,6 @@ module.exports = function LadokApi (baseUrl, ssl) {
       })
 
       yield response
-
     }
   }
 
