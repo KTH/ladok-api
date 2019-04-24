@@ -10,10 +10,6 @@ test('The "test" method should reach the right endpoint', async t => {
     .reply(200, {})
 
   const ladok = LadokApi('http://ladok.example', { pfx: 'some pfx file' })
-  try {
-    await ladok.test()
-    t.truthy(scope.isDone())
-  } catch (e) {
-    throw e
-  }
+  await ladok.test()
+  t.truthy(scope.isDone())
 })
