@@ -2,13 +2,19 @@ const got = require('got')
 
 module.exports = function LadokApi (baseUrl, ssl) {
   let options = {
-    baseUrl
+    baseUrl,
+      headers: {
+        'Accept': 'application/vnd.ladok-kataloginformation+json'
+      }
   }
+
+
 
   if (!ssl) {
     throw new TypeError('LadokApi requires at least 2 arguments')
   }
 
+// TODO: Accept application/vnd.ladok-kataloginformation+json header!
   if (ssl.pfx) {
     options.pfx = ssl.pfx
   } else if (ssl.cert && ssl.key) {
