@@ -1,7 +1,8 @@
 const got = require('got')
 
-module.exports = function LadokApi (baseUrl, ssl) {
-  let options = {
+module.exports = function LadokApi (baseUrl, ssl, options) {
+  const log = options.log || (() => {})
+  let gotOptions = {
     baseUrl
   }
 
@@ -10,23 +11,25 @@ module.exports = function LadokApi (baseUrl, ssl) {
   }
 
   if (ssl.pfx) {
-    options.pfx = ssl.pfx
+    gotOptions.pfx = ssl.pfx
   } else if (ssl.cert && ssl.key) {
-    options.cert = ssl.cert
-    options.key = ssl.key
+    gotOptions.cert = ssl.cert
+    gotOptions.key = ssl.key
   } else {
     throw new TypeError('Second argument "ssl" must have either "pfx" property or both "cert" and "key"')
   }
 
-  options.passphrase = ssl.passphrase
+  gotOptions.passphrase = ssl.passphrase
 
   async function test () {
-    return got('/kataloginformation/anvandare/autentiserad', options)
+    log(`GET /kataloginformation/anvandare/autentiserad`)
+    return got('/kataloginformation/anvandare/autentiserad', gotOptions)
   }
 
   async function requestUrl (endpoint, method = 'GET', parameters) {
+    log(`GET ${endpoint}`)
     return got(endpoint, {
-      ...options,
+      ...gotOptions,
       json: true,
       body: parameters,
       method
@@ -34,8 +37,9 @@ module.exports = function LadokApi (baseUrl, ssl) {
   }
 
   async function * sokPaginated (endpoint, criteria) {
+    log(`PUT ${endpoint}`)
     const size = await got(endpoint, {
-      ...options,
+      ...gotOptions,
       json: true,
       method: 'PUT',
       body: {
@@ -45,12 +49,15 @@ module.exports = function LadokApi (baseUrl, ssl) {
       }
     }).then(r => r.body.TotaltAntalPoster)
 
+    log(`PUT ${endpoint} has ${size} results`)
+
     let page = 0
     while (size > page * 100) {
       page++
+      log(`PUT ${endpoint}, page ${page}`)
 
       const response = await got(endpoint, {
-        ...options,
+        ...gotOptions,
         json: true,
         method: 'PUT',
         body: {
@@ -65,9 +72,18 @@ module.exports = function LadokApi (baseUrl, ssl) {
     }
   }
 
+  async function * sok (endpoint, criteria) {
+    for await (let page of listPaginated(endpoint, criteria)) {
+      for (let element of page.body.Resultat) {
+        yield element
+      }
+    }
+  }
+
   return {
     test,
     requestUrl,
-    sokPaginated
+    sokPaginated,
+    sok
   }
 }
