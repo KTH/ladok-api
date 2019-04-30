@@ -3,6 +3,7 @@ const got = require('got')
 module.exports = function LadokApi (baseUrl, ssl) {
   let options = {
     baseUrl,
+      json: true,
       headers: {
         'Accept': 'application/vnd.ladok-kataloginformation+json'
       }
