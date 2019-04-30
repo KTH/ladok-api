@@ -1,9 +1,10 @@
 const got = require('got')
 
-module.exports = function LadokApi (baseUrl, ssl, options) {
+module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   const log = options.log || (() => {})
   let gotOptions = {
-    baseUrl
+    baseUrl,
+    json: true
   }
 
   if (!ssl) {
@@ -23,7 +24,12 @@ module.exports = function LadokApi (baseUrl, ssl, options) {
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
-    return got('/kataloginformation/anvandare/autentiserad', gotOptions)
+    return got('/kataloginformation/anvandare/autentiserad', {
+      ...gotOptions,
+      headers: {
+        'Accept': 'application/vnd.ladok-kataloginformation+json'
+      }
+    })
   }
 
   async function requestUrl (endpoint, method = 'GET', parameters) {
@@ -72,7 +78,7 @@ module.exports = function LadokApi (baseUrl, ssl, options) {
   }
 
   async function * sok (endpoint, criteria) {
-    for await (let page of listPaginated(endpoint, criteria)) {
+    for await (let page of sokPaginated(endpoint, criteria)) {
       for (let element of page.body.Resultat) {
         yield element
       }
