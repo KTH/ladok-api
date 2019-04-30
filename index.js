@@ -4,10 +4,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   const log = options.log || (() => {})
   let gotOptions = {
     baseUrl,
-    json: true,
-    headers: {
-      'Accept': 'application/vnd.ladok-kataloginformation+json'
-    }
+    json: true
   }
 
   if (!ssl) {
@@ -27,7 +24,12 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
-    return got('/kataloginformation/anvandare/autentiserad', gotOptions)
+    return got('/kataloginformation/anvandare/autentiserad', {
+      ...gotOptions,
+      headers: {
+        'Accept': 'application/vnd.ladok-kataloginformation+json'
+      }
+    })
   }
 
   async function requestUrl (endpoint, method = 'GET', parameters) {
@@ -63,6 +65,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
       const response = await got(endpoint, {
         ...gotOptions,
         json: true,
+        headers: {},
         method: 'PUT',
         body: {
           ...criteria,
