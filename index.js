@@ -65,7 +65,6 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
       const response = await got(endpoint, {
         ...gotOptions,
         json: true,
-        headers: {},
         method: 'PUT',
         body: {
           ...criteria,
