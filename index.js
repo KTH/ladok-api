@@ -72,7 +72,7 @@ module.exports = function LadokApi (baseUrl, ssl, options) {
   }
 
   async function * sok (endpoint, criteria) {
-    for await (let page of listPaginated(endpoint, criteria)) {
+    for await (let page of sokPaginated(endpoint, criteria)) {
       for (let element of page.body.Resultat) {
         yield element
       }
