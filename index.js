@@ -9,21 +9,20 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
     throw new TypeError('Second argument "ssl" must have either "pfx" property or both "cert" and "key"')
   }
 
-  const gotOptions = {
+  const ladokGot = got.extend({
     baseUrl,
     json: true,
     pfx: ssl.pfx,
     cert: ssl.cert,
     key: ssl.key,
     passphrase: ssl.passphrase
-  }
+  })
 
   const log = options.log || (() => {})
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
-    return got('/kataloginformation/anvandare/autentiserad', {
-      ...gotOptions,
+    return ladokGot('/kataloginformation/anvandare/autentiserad', {
       headers: {
         'Accept': 'application/vnd.ladok-kataloginformation+json'
       }
@@ -32,8 +31,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
 
   async function requestUrl (endpoint, method = 'GET', parameters) {
     log(`GET ${endpoint}`)
-    return got(endpoint, {
-      ...gotOptions,
+    return ladokGot(endpoint, {
       json: true,
       body: parameters,
       method
@@ -42,9 +40,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
 
   async function * sokPaginated (endpoint, criteria) {
     log(`PUT ${endpoint}`)
-    const size = await got(endpoint, {
-      ...gotOptions,
-      json: true,
+    const size = await ladokGot(endpoint, {
       method: 'PUT',
       body: {
         ...criteria,
@@ -60,9 +56,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
       page++
       log(`PUT ${endpoint}, page ${page}`)
 
-      const response = await got(endpoint, {
-        ...gotOptions,
-        json: true,
+      const response = await ladokGot(endpoint, {
         method: 'PUT',
         body: {
           ...criteria,
