@@ -1,26 +1,24 @@
 const got = require('got')
 
 module.exports = function LadokApi (baseUrl, ssl, options = {}) {
-  const log = options.log || (() => {})
-  let gotOptions = {
-    baseUrl,
-    json: true
-  }
-
   if (!ssl) {
     throw new TypeError('LadokApi requires at least 2 arguments')
   }
 
-  if (ssl.pfx) {
-    gotOptions.pfx = ssl.pfx
-  } else if (ssl.cert && ssl.key) {
-    gotOptions.cert = ssl.cert
-    gotOptions.key = ssl.key
-  } else {
+  if (!ssl.pfx && !(ssl.cert && ssl.key)) {
     throw new TypeError('Second argument "ssl" must have either "pfx" property or both "cert" and "key"')
   }
 
-  gotOptions.passphrase = ssl.passphrase
+  const gotOptions = {
+    baseUrl,
+    json: true,
+    pfx: ssl.pfx,
+    cert: ssl.cert,
+    key: ssl.key,
+    passphrase: ssl.passphrase
+  }
+
+  const log = options.log || (() => {})
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
