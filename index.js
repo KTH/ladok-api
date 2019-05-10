@@ -1,5 +1,10 @@
 const got = require('got')
 
+function removeSSL (err) {
+  delete err.gotOptions
+  return err
+}
+
 module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   if (!ssl) {
     throw new TypeError('LadokApi requires at least 2 arguments')
@@ -22,31 +27,41 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
-    return ladokGot('/kataloginformation/anvandare/autentiserad', {
-      headers: {
-        'Accept': 'application/vnd.ladok-kataloginformation+json'
-      }
-    })
+    try {
+      const response = await ladokGot('/kataloginformation/anvandare/autentiserad', {
+        headers: {
+          'Accept': 'application/vnd.ladok-kataloginformation+json'
+        }
+      })
+
+      return response
+    } catch (e) {
+      throw removeSSL(e)
+    }
   }
 
   async function requestUrl (endpoint, method = 'GET', parameters) {
-    log(`GET ${endpoint}`)
-    return ladokGot(endpoint, {
-      json: true,
-      body: parameters,
-      method
-    })
+    log(`${method} ${endpoint}`)
+
+    try {
+      const response = await ladokGot(endpoint, {
+        json: true,
+        body: parameters,
+        method
+      })
+
+      return response
+    } catch (e) {
+      throw removeSSL(e)
+    }
   }
 
   async function * sokPaginated (endpoint, criteria) {
     log(`PUT ${endpoint}`)
-    const size = await ladokGot(endpoint, {
-      method: 'PUT',
-      body: {
-        ...criteria,
-        Page: 1,
-        Limit: 1
-      }
+    const size = await requestUrl(endpoint, 'PUT', {
+      ...criteria,
+      Page: 1,
+      Limit: 1
     }).then(r => r.body.TotaltAntalPoster)
 
     log(`PUT ${endpoint} has ${size} results`)
@@ -56,13 +71,10 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
       page++
       log(`PUT ${endpoint}, page ${page}`)
 
-      const response = await ladokGot(endpoint, {
-        method: 'PUT',
-        body: {
-          ...criteria,
-          Page: page,
-          Limit: 100
-        }
+      const response = await requestUrl(endpoint, 'PUT', {
+        ...criteria,
+        Page: page,
+        Limit: 100
       })
 
       yield response
