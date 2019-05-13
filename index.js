@@ -1,9 +1,5 @@
 const got = require('got')
-
-function removeSSL (err) {
-  delete err.gotOptions
-  return err
-}
+const cloneDeepWith = require('lodash/fp/cloneDeepWith')
 
 module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   if (!ssl) {
@@ -24,6 +20,23 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   })
 
   const log = options.log || (() => {})
+  const removeSSL = cloneDeepWith(value => {
+    if (ssl.pfx && value === ssl.pfx) {
+      return 'xxx'
+    }
+
+    if (ssl.cert && value === ssl.cert) {
+      return 'xxx'
+    }
+
+    if (ssl.key && value === ssl.key) {
+      return 'xxx'
+    }
+
+    if (ssl.passphrase && value === ssl.passphrase) {
+      return 'xxx'
+    }
+  })
 
   async function test () {
     log(`GET /kataloginformation/anvandare/autentiserad`)
