@@ -35,3 +35,35 @@ test('The "test" method should reach the right endpoint', async t => {
   await ladok.test()
   t.truthy(scope.isDone())
 })
+
+test('Pfx content nor passphrase must not leak when throwing errors', async t => {
+  t.plan(2)
+  const ladok = LadokApi('https://api.test.ladok.se', {
+    pfx: Buffer.from('some_string'),
+    passphrase: 'aaa'
+  })
+
+  try {
+    await ladok.test()
+  } catch (err) {
+    const error = JSON.stringify(err)
+    t.notRegex(error, /pfx/)
+    t.notRegex(error, /passphrase/)
+  }
+})
+
+test('cert or key must not leak when throwing errors', async t => {
+  t.plan(2)
+  const ladok = LadokApi('https://api.test.ladok.se', {
+    cert: 'secret_cert',
+    key: 'secret_key'
+  })
+
+  try {
+    await ladok.test()
+  } catch (err) {
+    const error = JSON.stringify(err)
+    t.notRegex(error, /secret_cert/)
+    t.notRegex(error, /secret_key/)
+  }
+})
