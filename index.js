@@ -1,4 +1,5 @@
 const got = require('got')
+const assert = require('assert').strict
 
 function removeSSL (err) {
   delete err.gotOptions
@@ -6,13 +7,11 @@ function removeSSL (err) {
 }
 
 module.exports = function LadokApi (baseUrl, ssl, options = {}) {
-  if (!ssl) {
-    throw new TypeError('LadokApi requires at least 2 arguments')
-  }
-
-  if (!ssl.pfx && !(ssl.cert && ssl.key)) {
-    throw new TypeError('Second argument "ssl" must have either "pfx" property or both "cert" and "key"')
-  }
+  assert.equal(typeof baseUrl, 'string', new TypeError(`First argument "baseUrl" expected to be a string. Obtained ${typeof baseUrl}`))
+  assert.ok(
+    ssl.pfx || (ssl.cert && ssl.key),
+    new TypeError('Second argument "ssl" must be an object with either {pfx} or {cert, key}')
+  )
 
   const ladokGot = got.extend({
     baseUrl,
@@ -36,6 +35,9 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
 
       return response
     } catch (e) {
+      if (e.name === 'RequestError' && e.message === 'mac verify failure') {
+        e.message = 'Error decoding certificate. Check the "ssl" argument passed when building the instance'
+      }
       throw removeSSL(e)
     }
   }
