@@ -1,4 +1,5 @@
 const got = require('got')
+const augmentGenerator = require('./lib/augmentGenerator')
 
 function removeSSL (err) {
   delete err.gotOptions
@@ -92,7 +93,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   return {
     test,
     requestUrl,
-    sokPaginated,
-    sok
+    augmentGenerator(sokPaginated),
+    augmentGenerator(sok)
   }
 }
