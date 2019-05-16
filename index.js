@@ -93,7 +93,7 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
   return {
     test,
     requestUrl,
-    augmentGenerator(sokPaginated),
-    augmentGenerator(sok)
+    sokPaginated: augmentGenerator(sokPaginated),
+    sok: augmentGenerator(sok)
   }
 }
