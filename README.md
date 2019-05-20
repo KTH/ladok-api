@@ -8,16 +8,14 @@
 const LadokApi = require('@kth/ladok-api')
 const fs = require('fs')
 
-async function start () {
+;(async function start () {
   const ladok = LadokApi(process.env.LADOK_API_BASE_URL, {
     pfx: fs.readFileSync('./my-certificate.pfx'),
     passphrase: process.env.LADOK_API_CERT_PASSPHRASE
   })
 
   console.log((await ladok.test()).body)
-}
-
-start()
+})()
 ```
 
 ## API
@@ -55,3 +53,13 @@ const response = (await ladok.test()).body
 ### ladokApi.requestUrl(endpoint, method, parameters)
 
 Make a request to a certain `endpoint` with a specific `method`. Use `parameters` (the third argument) to pass body parameters.
+
+### ladokApi.sok(endpoint, criteria, key)
+
+Make a "sok"-type request to Ladok. Parameters:
+
+1. `endpoint`. The endpoint to do the request.
+2. `criteria`. Object to pass as search criteria. It will be passed as body parameters in the request.
+3. `key`. Key in the response object that contains the array to traverse.
+
+Returns an iterator object to traverse through each of the results.
