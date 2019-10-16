@@ -41,14 +41,15 @@ module.exports = function LadokApi (baseUrl, ssl, options = {}) {
     }
   }
 
-  async function requestUrl (endpoint, method = 'GET', parameters) {
+  async function requestUrl (endpoint, method = 'GET', body, attributes) {
     log(`${method} ${endpoint}`)
 
     try {
       const response = await ladokGot(endpoint, {
         json: true,
-        body: parameters,
-        method
+        body,
+        method,
+        ...attributes
       })
 
       return response
